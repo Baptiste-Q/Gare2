@@ -35,6 +35,7 @@ public class EspaceQuai {
         //Le train cree une liste de voyageurs et signale son nombre de place disponible
         train.createListeVoyageursAttendus();
         espaceVente.ajouterPlace(train, train.getCapaciteTrain());
+        train.setEtatVente(true);
 
         System.out.println("Train en gare " + train.getNomTrain());
     }
@@ -42,6 +43,7 @@ public class EspaceQuai {
     //Une fois que tous les voyageurs ont embarque et que le delai d'attente est depasse, le train peut quitter la voie
     synchronized public void quitterVoie(Train train){
 
+        train.setEtatVente(false);
         listeTrainQuai.remove(train);
         voiesDispo++;
         // Pour les trains en attente d'un quai libre.

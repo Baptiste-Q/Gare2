@@ -24,22 +24,29 @@ public class Guichet extends Thread{
             listeTrainQuai = espaceVenteAssocie.getEspaceQuaiAssocie().getListeTrainQuai();
             int i = 0;
             while (i < listeTrainQuai.size()) {
-                if (listeTrainQuai.get(i).getNbPlacesDisponibles() > 0) {
+
+                if (   ( listeTrainQuai.get(i).getVenteOuverte() )
+                    && ( listeTrainQuai.get(i).getNbPlacesDisponibles() > 0) ) {
+
+                    listeTrainQuai.get(i).setNbPlacesDisponibles((listeTrainQuai.get(i).getNbPlacesDisponibles() - 1));
+                    System.out.println(listeTrainQuai.get(i).getNomTrain() + "  " + listeTrainQuai.get(i).getNbPlacesDisponibles());
+                    // On ajoute le voyageur a la liste du train
+                    listeTrainQuai.get(i).getListeVoyageursAttendus().add(voyageur);
+
                     try {
                         Thread.sleep(TEMPS_IMPRESSION_TICKET);
-                        listeTrainQuai.get(i).setNbPlacesDisponibles((listeTrainQuai.get(i).getNbPlacesDisponibles() - 1));
-                        // On ajoute le voyageur a la liste du train
-                        listeTrainQuai.get(i).getListeVoyageursAttendus().add(voyageur);
-                        //On retourne le train concerne par l'achat du ticket
-                        return listeTrainQuai.get(i);
-
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    //On retourne le train concerne par l'achat du ticket
+                    return listeTrainQuai.get(i);
+
                 } else {
                     i++;
                 }
             }
+
             try {
                 wait();
             } catch (InterruptedException e) {

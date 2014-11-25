@@ -41,7 +41,6 @@ public class EspaceVente {
                     i++;
                 }
             }
-
             if (!guichetTrouve) {
                 try {
                     wait();

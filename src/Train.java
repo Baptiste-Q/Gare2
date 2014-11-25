@@ -13,6 +13,7 @@ public class Train extends Thread {
     private String nomTrain;
     private EspaceQuai quai;
     private List<Voyageurs> listeVoyageursAttendus;
+    private boolean venteOuverte;
 
 
     public Train(String nom, EspaceQuai quai) {
@@ -21,13 +22,16 @@ public class Train extends Thread {
         capaciteTrain = 25;
         this.nomTrain = nom;
         this.quai = quai;
+        this.venteOuverte = false;
     }
 
     public double getVitesseTrain() {
         return vitesseTrain;
     }
 
-    public double getTempsArretTrain() {return tempsArretTrain;}
+    public double getTempsArretTrain() {
+        return tempsArretTrain;
+    }
 
     synchronized public void setNbPlacesDisponibles(int x) {
         this.nbPlacesDisponibles = x;
@@ -45,14 +49,26 @@ public class Train extends Thread {
         this.nomTrain = nomTrain;
     }
 
-    public String getNomTrain() { return nomTrain; }
+    public String getNomTrain() {
+        return nomTrain;
+    }
+
+    synchronized public boolean getVenteOuverte() {
+        return this.venteOuverte;
+    }
+
+    synchronized public void setEtatVente(boolean tof) {
+        this.venteOuverte = tof;
+    }
 
 
     public void createListeVoyageursAttendus () {
         listeVoyageursAttendus = new ArrayList<Voyageurs>();
     }
 
-    public List<Voyageurs> getListeVoyageursAttendus() { return listeVoyageursAttendus; }
+    synchronized public List<Voyageurs> getListeVoyageursAttendus() {
+        return listeVoyageursAttendus;
+    }
 
 
     @Override
