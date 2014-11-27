@@ -5,14 +5,15 @@ import java.util.*;
  */
 public class Train extends Thread {
 
-    private final int NB_MAX_TRAIN = 5;
     private int vitesseTrain;
     private int tempsArretTrain;
     private int capaciteTrain;
     private int nbPlacesDisponibles;
     private String nomTrain;
+    private Boolean venteOuverte;
+
     private EspaceQuai quai;
-    private int nbVoyageursAttendus;
+    private Collection<Voyageurs> voyageursAttendus;
 
 
     public Train(String nom, EspaceQuai quai) {
@@ -21,7 +22,8 @@ public class Train extends Thread {
         capaciteTrain       = 25;
         this.nomTrain       = nom;
         this.quai           = quai;
-        nbVoyageursAttendus = 0;
+        voyageursAttendus = new ArrayList<Voyageurs>();
+        venteOuverte = false;
     }
 
     synchronized public void setNbPlacesDisponibles(int x) {
@@ -40,31 +42,31 @@ public class Train extends Thread {
         return nomTrain;
     }
 
-    synchronized public void informeTrain() {
-        notifyAll();
+    public void setVenteOuverte(Boolean bool){
+        venteOuverte = bool;
+    }
+
+    synchronized public void ajouterVoyageurAttendus(Voyageurs voyageur){
+        voyageursAttendus.add(voyageur);
     }
 
     @Override
     public void run() {
 
-        //Le train entre en gare
+        //train en gare
         quai.entrerVoie(this);
         System.out.println(""+getNomTrain()+" : arrive en gare.");
 
-        //Le train attend la duree d'arret normale.
+        //train wait
         try {
             Thread.sleep(tempsArretTrain*100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-
-        // S'il y a toujours des voyageurs attendus, le train ne part pas et attend les voyageurs manquants
-
-        //Le train est plein, il peut quitter la gare
+        //Le train quitte la gare.
         quai.quitterVoie(this);
         System.out.println(""+getNomTrain()+" a quitté la gare.");
-
     }
 }
 

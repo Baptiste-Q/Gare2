@@ -6,18 +6,15 @@ import java.util.*;
 public class EspaceQuai {
 
     private final int NB_VOIES = 2;
+    private int nbTrainEnQuai;
     private int voiesDispo;
-    private int trainsEnQuai;
-    private List<Train> listeTrainQuai;
 
-    public EspaceVente espaceVente;
+    private EspaceVente espaceVente;
 
     EspaceQuai(EspaceVente espaceVente){
         voiesDispo = NB_VOIES;
-        trainsEnQuai = 0;
-        listeTrainQuai = new ArrayList<Train>();
+        nbTrainEnQuai = 0;
         this.espaceVente = espaceVente;
-        this.espaceVente.setEspaceQuaiAssocie(this);
     }
 
     //Le train entre dans la voie
@@ -30,18 +27,19 @@ public class EspaceQuai {
             }
         }
         voiesDispo--;
-        //Le train est ajoute a la liste des trains en gare
-        listeTrainQuai.add(train);
-        //Le train cree une liste de voyageurs et signale son nombre de place disponibles
-        espaceVente.ajouterTicketVente(train, train.getCapaciteTrain());
 
+        //Le train est ajoute a la liste des trains en gare
+        espaceVente.addTrain(train);
+
+        espaceVente.ajouterTicketVente(train);
+        train.setVenteOuverte(true);
         System.out.println("Train en gare " + train.getNomTrain());
     }
 
     //Une fois que tous les voyageurs ont embarque et que le delai d'attente est depasse, le train peut quitter la voie
     synchronized public void quitterVoie(Train train)  {
-
-        listeTrainQuai.remove(train);
+        train.setVenteOuverte(false);
+        espaceVente.removeTrain(train);
         voiesDispo++;
         //Pour les trains en attente d'un quai libre.
         notifyAll();
@@ -51,8 +49,9 @@ public class EspaceQuai {
    synchronized public void accederAuTrain (Train train, Voyageurs voyageur) {
 
         int i = 0;
-        Train traindelaListe = listeTrainQuai.get(i);
-        while (i < listeTrainQuai.size()) {
+       ArrayList<Train> liste = espaceVente.getListeTrainQuai();
+        Train traindelaListe = liste.get(i);
+        while (i < espaceVente.getListeTrainQuai().size()) {
             if(traindelaListe.getNomTrain() == train.getNomTrain() ) {
                 // On supprime le voyageur de la liste des voyageurs attendus
                 notifyAll();
@@ -65,16 +64,7 @@ public class EspaceQuai {
         }
     }
 
-    public EspaceVente getEspaceVente() {
-        return espaceVente;
+    public void addTrainEnQuai(Train train){
+        espaceVente.addTrain(train);
     }
-
-    public EspaceQuai getEspaceQuai() {
-        return this;
-    }
-
-    public List<Train> getListeTrainQuai() { return listeTrainQuai; }
-
-    public List<Guichet> getListeGuichet() { return espaceVente.getListeGuichet();}
-
 }

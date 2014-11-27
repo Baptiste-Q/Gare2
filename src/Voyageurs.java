@@ -5,10 +5,8 @@ import java.util.*;
  */
 public class Voyageurs extends Thread {
 
-    private final int NB_MAX_VOYAGEURS = 500;
     private EspaceQuai espaceQuai;
     private String nom;
-    private List<Voyageurs> listeVoyageursAttendus;
     private Ticket ticketAchete;
 
     public Voyageurs (String nom, EspaceQuai espaceQuai) {
@@ -19,7 +17,6 @@ public class Voyageurs extends Thread {
     public String getNom() {
         return nom;
     }
-
 
     @Override
     public void run() {
