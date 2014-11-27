@@ -32,21 +32,18 @@ public class EspaceQuai {
         voiesDispo--;
         //Le train est ajoute a la liste des trains en gare
         listeTrainQuai.add(train);
-        //Le train cree une liste de voyageurs et signale son nombre de place disponible
-        train.createListeVoyageursAttendus();
-        espaceVente.ajouterPlace(train, train.getCapaciteTrain());
-        train.setEtatVente(true);
+        //Le train cree une liste de voyageurs et signale son nombre de place disponibles
+        espaceVente.ajouterTicketVente(train, train.getCapaciteTrain());
 
         System.out.println("Train en gare " + train.getNomTrain());
     }
 
     //Une fois que tous les voyageurs ont embarque et que le delai d'attente est depasse, le train peut quitter la voie
-    synchronized public void quitterVoie(Train train){
+    synchronized public void quitterVoie(Train train)  {
 
-        train.setEtatVente(false);
         listeTrainQuai.remove(train);
         voiesDispo++;
-        // Pour les trains en attente d'un quai libre.
+        //Pour les trains en attente d'un quai libre.
         notifyAll();
     }
 
@@ -58,8 +55,8 @@ public class EspaceQuai {
         while (i < listeTrainQuai.size()) {
             if(traindelaListe.getNomTrain() == train.getNomTrain() ) {
                 // On supprime le voyageur de la liste des voyageurs attendus
-                train.getListeVoyageursAttendus().remove(voyageur);
                 notifyAll();
+                //train.informeTrain();
                 break;
             }
             else {

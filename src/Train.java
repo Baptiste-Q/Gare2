@@ -12,25 +12,16 @@ public class Train extends Thread {
     private int nbPlacesDisponibles;
     private String nomTrain;
     private EspaceQuai quai;
-    private List<Voyageurs> listeVoyageursAttendus;
-    private boolean venteOuverte;
+    private int nbVoyageursAttendus;
 
 
     public Train(String nom, EspaceQuai quai) {
-        vitesseTrain    = 100;
-        tempsArretTrain = 5;
-        capaciteTrain = 25;
-        this.nomTrain = nom;
-        this.quai = quai;
-        this.venteOuverte = false;
-    }
-
-    public double getVitesseTrain() {
-        return vitesseTrain;
-    }
-
-    public double getTempsArretTrain() {
-        return tempsArretTrain;
+        vitesseTrain        = 100;
+        tempsArretTrain     = 5;
+        capaciteTrain       = 25;
+        this.nomTrain       = nom;
+        this.quai           = quai;
+        nbVoyageursAttendus = 0;
     }
 
     synchronized public void setNbPlacesDisponibles(int x) {
@@ -45,31 +36,13 @@ public class Train extends Thread {
         return capaciteTrain;
     }
 
-    public void setNomTrain(String nomTrain) {
-        this.nomTrain = nomTrain;
-    }
-
     public String getNomTrain() {
         return nomTrain;
     }
 
-    synchronized public boolean getVenteOuverte() {
-        return this.venteOuverte;
+    synchronized public void informeTrain() {
+        notifyAll();
     }
-
-    synchronized public void setEtatVente(boolean tof) {
-        this.venteOuverte = tof;
-    }
-
-
-    public void createListeVoyageursAttendus () {
-        listeVoyageursAttendus = new ArrayList<Voyageurs>();
-    }
-
-    synchronized public List<Voyageurs> getListeVoyageursAttendus() {
-        return listeVoyageursAttendus;
-    }
-
 
     @Override
     public void run() {
@@ -80,10 +53,12 @@ public class Train extends Thread {
 
         //Le train attend la duree d'arret normale.
         try {
-            Thread.sleep(tempsArretTrain*1000);
+            Thread.sleep(tempsArretTrain*100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+
         // S'il y a toujours des voyageurs attendus, le train ne part pas et attend les voyageurs manquants
 
         //Le train est plein, il peut quitter la gare

@@ -8,7 +8,9 @@ public class EspaceVente {
     private final int NB_MAX_GUICHET = 5;
     private EspaceQuai espaceQuaiAssocie;
     private List<Guichet> listeGuichet;
-    private List<Train> listeTrainQuai;
+    private List<Ticket> listeTicket;
+    private Guichet guichet;
+
 
 
     public EspaceVente() {
@@ -16,9 +18,8 @@ public class EspaceVente {
         listeGuichet = new ArrayList<Guichet>();
 
         for (int i=0; i<4; i++) {
-            Guichet guichet = new Guichet(i+1);
+            guichet = new Guichet(i+1, this);
             guichet.start();
-            guichet.setEspaceVenteAssocie(this);
             listeGuichet.add(guichet);
         }
     }
@@ -53,16 +54,40 @@ public class EspaceVente {
 
     synchronized public void quitterGuichet(Guichet guichetOccupe) {
 
-        guichetOccupe.setGuichetLibre(true);
         notifyAll();
     }
 
-    synchronized public void ajouterPlace(Train train, int x) {
-        train.setNbPlacesDisponibles(x);
-        for (int i=0; i<4; i++) {
-            listeGuichet.get(i).informeGuichets();
+    synchronized public void ajouterTicketVente(Train train, int nbPlacesDisponibles) {
+
+
+        for (int i = 0; i < nbPlacesDisponibles; i++) {
+            listeTicket.add(new Ticket(train, i + 1));
         }
     }
+
+    synchronized public Ticket chercherTicketDisponible () {
+
+        while (true) {
+
+            if (!listeTicket.isEmpty()) {
+                for (int i = 0; i < listeTicket.size(); i++)
+                {
+                    if (!listeTicket.get(i).hasPossesseur() )
+                    {
+                        return listeTicket.get(i);
+                    }
+                }
+            }
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public List<Ticket> getListeTicket() {return listeTicket; }
 
     public void setEspaceQuaiAssocie(EspaceQuai espaceQuai) {
         this.espaceQuaiAssocie = espaceQuai;
@@ -72,7 +97,8 @@ public class EspaceVente {
         return listeGuichet;
     }
 
-    public EspaceQuai getEspaceQuaiAssocie() {return this.espaceQuaiAssocie;}
+    public EspaceQuai getEspaceQuaiAssocie() { return espaceQuaiAssocie; }
 
 }
+
 

@@ -6,14 +6,13 @@ import java.util.*;
 public class Voyageurs extends Thread {
 
     private final int NB_MAX_VOYAGEURS = 500;
-    private boolean ticketValide;
     private EspaceQuai espaceQuai;
     private String nom;
     private List<Voyageurs> listeVoyageursAttendus;
+    private Ticket ticketAchete;
 
     public Voyageurs (String nom, EspaceQuai espaceQuai) {
         this.nom = nom;
-        ticketValide = false;
         this.espaceQuai = espaceQuai;
     }
 
@@ -26,10 +25,10 @@ public class Voyageurs extends Thread {
     public void run() {
         Guichet guichetAssocie = this.espaceQuai.espaceVente.accederGuichet();
         System.out.println(""+getNom()+" : j'ai accédé au guichet n°" + guichetAssocie.getNumGuichet() + ".");
-        Train trainReserve = guichetAssocie.acheterTicket(this);
-        this.espaceQuai.espaceVente.quitterGuichet(guichetAssocie);
-        System.out.println(""+getNom()+" j'ai acheté un billet pour le " + trainReserve.getNomTrain() + ".");
-        espaceQuai.accederAuTrain(trainReserve, this);
+        ticketAchete = guichetAssocie.acheterTicket(this);
+        espaceQuai.espaceVente.quitterGuichet(guichetAssocie);
+        System.out.println(""+getNom()+" j'ai acheté un billet pour le " + ticketAchete.getTrain().getNomTrain() + ".");
+        espaceQuai.accederAuTrain(ticketAchete.getTrain(), this);
         System.out.println(""+getNom()+" je suis monté dans le train");
     }
 }

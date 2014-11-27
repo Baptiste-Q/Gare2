@@ -3,7 +3,7 @@ import java.util.*;
 /**
  * Created by 14007427 on 19/11/14.
  */
-public class Guichet extends Thread{
+public class Guichet extends Thread {
 
     private final int TEMPS_IMPRESSION_TICKET = 10;
     private EspaceVente espaceVenteAssocie;
@@ -12,52 +12,25 @@ public class Guichet extends Thread{
     private List<Train> listeTrainQuai;
 
 
-    public Guichet(int numGuichet) {
+    public Guichet(int numGuichet, EspaceVente espaceVente) {
         this.guichetLibre = true;
         this.numGuichet = numGuichet;
+        this.espaceVenteAssocie = espaceVente;
     }
 
-    synchronized public Train acheterTicket(Voyageurs voyageur) {
+    synchronized public Ticket acheterTicket(Voyageurs voyageur) {
 
         while (true) {
 
-            listeTrainQuai = espaceVenteAssocie.getEspaceQuaiAssocie().getListeTrainQuai();
-            int i = 0;
-            while (i < listeTrainQuai.size()) {
-
-                if (   ( listeTrainQuai.get(i).getVenteOuverte() )
-                    && ( listeTrainQuai.get(i).getNbPlacesDisponibles() > 0) ) {
-
-                    listeTrainQuai.get(i).setNbPlacesDisponibles((listeTrainQuai.get(i).getNbPlacesDisponibles() - 1));
-                    System.out.println(listeTrainQuai.get(i).getNomTrain() + "  " + listeTrainQuai.get(i).getNbPlacesDisponibles());
-                    // On ajoute le voyageur a la liste du train
-                    listeTrainQuai.get(i).getListeVoyageursAttendus().add(voyageur);
-
-                    try {
-                        Thread.sleep(TEMPS_IMPRESSION_TICKET);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    //On retourne le train concerne par l'achat du ticket
-                    return listeTrainQuai.get(i);
-
-                } else {
-                    i++;
-                }
-            }
-
+            Ticket ticketAchete = espaceVenteAssocie.chercherTicketDisponible();
+            ticketAchete.setPossesseurTicket(voyageur);
             try {
-                wait();
+                Thread.sleep(TEMPS_IMPRESSION_TICKET);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+            return ticketAchete;
         }
-    }
-
-    public void setEspaceVenteAssocie(EspaceVente espaceVente) {
-        this.espaceVenteAssocie = espaceVente;
     }
 
     public boolean getGuichetLibre() {
